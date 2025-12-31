@@ -3,6 +3,7 @@
 #include <logger/log.hpp>
 #include <logger/logger.hpp>
 #include <syncstream>
+#include <iostream>
 #include <thread>
 
 namespace Logger {
@@ -20,8 +21,8 @@ Logger::~Logger() {
   writerThread.join();
 }
 
-void Logger::log(LogLevel level, const std::string origin,
-                 const std::string message) {
+void Logger::log(LogLevel level, const std::string& origin,
+                 const std::string& message) {
   Logger &inst = getInstance();
 
   if (level < inst.m_logLevel)
