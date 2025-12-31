@@ -69,4 +69,25 @@ fatal(const std::string &message,
       const std::source_location origin = std::source_location::current()) {
   Logger::log(LogLevel::FATAL, origin.function_name(), message);
 }
+
+inline void debug(const std::string &origin, const std::string &message) {
+  Logger::log(LogLevel::DEBUG, origin, message);
+}
+
+inline void info(const std::string &origin, const std::string &message) {
+  Logger::log(LogLevel::INFO, origin, message);
+}
+
+inline void warn(const std::string &origin, const std::string &message) {
+  Logger::log(LogLevel::WARNING, origin, message);
+}
+
+inline void error(const std::string &origin, const std::string &message) {
+  Logger::log(LogLevel::ERROR, origin, message);
+}
+
+inline void fatal(const std::string &origin, const std::string &message) {
+  Logger::log(LogLevel::FATAL, origin, message);
+}
+
 } // namespace Logger
