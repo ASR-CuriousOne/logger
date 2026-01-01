@@ -2,12 +2,18 @@
 
 ---
 
-Barely Working 
+Barely Working
+
+#### OS support
+- Linux
+- macOS
+(not Windows primarily cause of POSIX sockets used in network sink)
 
 #### Current Features
 - Levels Of Logs
 - Source Of Logs 
 - Async write (with async writer thread)
+- Multiple sinks for logs (console, files, network(over UDP))
 
 #### Build
 Run ./compile.sh
@@ -22,6 +28,6 @@ cmake --build .
 ````
 
 #### Future Features 
-- Multiple Write Targets (like Files, Network, OTEL)
 - Adjustable format 
+- Windows support
 
