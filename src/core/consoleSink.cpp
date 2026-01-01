@@ -1,5 +1,5 @@
 #include <iostream>
-#include <logger/sinks/consoleSink.hpp>
+#include <logger/sinks.hpp>
 #include <syncstream>
 
 namespace Logger {

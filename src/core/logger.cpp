@@ -1,27 +1,27 @@
 #include <cassert>
 #include <logger/log.hpp>
 #include <logger/logger.hpp>
-#include <syncstream>
-#include <iostream>
+#include <logger/sinks.hpp>
+#include <memory>
 #include <thread>
 
 namespace Logger {
 
 Logger::Logger() {
-	m_isRunning = true;
+  m_isRunning = true;
 
+  m_sinks.push_back(std::make_shared<ConsoleSink>());
   writerThread = std::thread([this] { writer(); });
-
 }
 
 Logger::~Logger() {
   m_isRunning = false;
-	assert(writerThread.joinable());
+  assert(writerThread.joinable());
   writerThread.join();
 }
 
-void Logger::log(LogLevel level, const std::string& origin,
-                 const std::string& message) {
+void Logger::log(LogLevel level, const std::string &origin,
+                 const std::string &message) {
   Logger &inst = getInstance();
 
   if (level < inst.m_logLevel)
@@ -32,26 +32,20 @@ void Logger::log(LogLevel level, const std::string& origin,
   inst.m_logQueue.push(std::move(log));
 }
 
-void Logger::setLevel(LogLevel level){
-	getInstance().m_logLevel = level;
-}
+void Logger::setLevel(LogLevel level) { getInstance().m_logLevel = level; }
 
 void Logger::writer() {
   while (m_isRunning || !m_logQueue.isEmpty()) {
     Log logToBeWritten;
     if (m_logQueue.waitAndPop(logToBeWritten, std::chrono::milliseconds(50))) {
-      writeLogs(std::move(logToBeWritten));
+      writeLogs(logToBeWritten);
     }
   }
 }
 
-void Logger::writeLogs(Log &&log) {
-  std::string logString = log.makeLog();
-
-	std::osyncstream(std::cout) << LevelToEscapeChar(log.logLevel) << logString << colorToEscapeChar(Colors::CLEAR) << '\n';
-}
 void Logger::writeLogs(const Log &log) {
-  std::string logString = log.makeLog();
-	std::osyncstream(std::cout) << LevelToEscapeChar(log.logLevel) << logString << colorToEscapeChar(Colors::CLEAR) << '\n';
+  for (const auto &sink : m_sinks) {
+    sink->write(log);
+  }
 }
 } // namespace Logger

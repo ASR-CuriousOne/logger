@@ -1,10 +1,13 @@
 #pragma once
 #include <logger/common.hpp>
 #include <logger/log.hpp>
+#include <logger/sinks.hpp>
 #include <logger/utils/queue.hpp>
+#include <memory>
 #include <source_location>
 #include <string>
 #include <thread>
+#include <vector>
 
 namespace Logger {
 
@@ -19,6 +22,8 @@ public:
                   const std::string &message);
   static void setLevel(LogLevel level);
 
+  static void addSink(std::shared_ptr<ILogSink> sink);
+
   Logger(const Logger &) = delete;
   Logger &operator=(const Logger &) = delete;
 
@@ -26,11 +31,13 @@ public:
   Logger &operator=(Logger &&) = delete;
 
 private:
-  Utils::mutexQueue<Log> m_logQueue;
-  LogLevel m_logLevel = LogLevel::DEBUG;
-
   std::atomic<bool> m_isRunning = true;
 
+  LogLevel m_logLevel = LogLevel::DEBUG;
+
+  std::vector<std::shared_ptr<ILogSink>> m_sinks;
+
+  Utils::mutexQueue<Log> m_logQueue;
   std::thread writerThread;
 
   Logger();
@@ -38,7 +45,6 @@ private:
   ~Logger();
 
   void writeLogs(const Log &log);
-  void writeLogs(Log &&log);
 
   void writer();
 };
