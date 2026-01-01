@@ -48,4 +48,10 @@ void Logger::writeLogs(const Log &log) {
     sink->write(log);
   }
 }
+
+void Logger::addSink(std::shared_ptr<ILogSink> sink) {
+  auto &inst = Logger::getInstance();
+  inst.m_sinks.push_back(sink);
+}
+
 } // namespace Logger

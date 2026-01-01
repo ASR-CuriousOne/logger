@@ -105,3 +105,10 @@ TEST(SinkTest, FileSink) {
   }
 }
 
+TEST(SinkTest, NetworkSink) {
+  auto udpSink = std::make_shared<Logger::NetworkSink>("127.0.0.1", 9000);
+  Logger::Logger::addSink(udpSink);
+
+  EXPECT_NO_THROW(Logger::info("This is sent via UDP!"));
+  EXPECT_NO_THROW(Logger::info("This too is sent via UDP!"));
+}

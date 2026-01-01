@@ -1,4 +1,5 @@
 #pragma once
+#include <arpa/inet.h>
 #include <filesystem>
 #include <fstream>
 #include <logger/log.hpp>
@@ -23,6 +24,16 @@ public:
 
 class ConsoleSink : public ILogSink {
 public:
-  void write(const Log &log);
+  void write(const Log &log) override;
+};
+
+class NetworkSink : public ILogSink {
+  int m_socketFd = -1;
+  struct sockaddr_in m_servAddr;
+
+public:
+  NetworkSink(const std::string &serverIP, int port);
+  ~NetworkSink() override;
+  void write(const Log &log) override;
 };
 } // namespace Logger
