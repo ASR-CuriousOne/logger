@@ -13,4 +13,5 @@ std::string_view colorToEscapeChar (Colors color);
 Colors LevelToColor (LogLevel level);
 std::string_view LevelToEscapeChar (LogLevel level);
 
+
 } // namespace Logger
