@@ -7,6 +7,7 @@ Barely Working
 #### OS support
 - Linux
 - macOS
+
 (not Windows primarily cause of POSIX sockets used in network sink)
 
 #### Current Features
