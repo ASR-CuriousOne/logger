@@ -1,4 +1,3 @@
-#include "logger/common.hpp"
 #include <cassert>
 #include <logger/log.hpp>
 #include <logger/logger.hpp>

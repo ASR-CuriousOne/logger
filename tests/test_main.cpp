@@ -48,50 +48,50 @@ TEST(Logger, ColorTest) {
   EXPECT_NO_THROW(inst.log(Logger::LogLevel::FATAL, "GTest", "Fatal Log"));
 }
 
-TEST(LoggerInteractive, LiveTest) {
-  auto &inst = Logger::Logger::getInstance();
-  inst.setLevel(Logger::LogLevel::DEBUG);
-
-  while (true) {
-    std::string input;
-
-    std::cin >> input;
-
-    if (input == "exit")
-      break;
-    if (input == "setlevel") {
-      std::string level;
-      std::cin >> level;
-
-      if (level == "debug")
-        inst.setLevel(Logger::LogLevel::DEBUG);
-      else if (level == "info")
-        inst.setLevel(Logger::LogLevel::INFO);
-      else if (level == "warn")
-        inst.setLevel(Logger::LogLevel::WARNING);
-      else if (level == "error")
-        inst.setLevel(Logger::LogLevel::ERROR);
-      else if (level == "fatal")
-        inst.setLevel(Logger::LogLevel::FATAL);
-      continue;
-    }
-    if (input == "level") {
-      std::string level, message;
-      std::cin >> level >> message;
-      Logger::LogLevel messLevel;
-      if (level == "debug")
-        messLevel = Logger::LogLevel::DEBUG;
-      else if (level == "info")
-        messLevel = Logger::LogLevel::INFO;
-      else if (level == "warn")
-        messLevel = Logger::LogLevel::WARNING;
-      else if (level == "error")
-        messLevel = Logger::LogLevel::ERROR;
-      else if (level == "fatal")
-        messLevel = Logger::LogLevel::FATAL;
-      EXPECT_NO_THROW(inst.log(messLevel, "GTest", message));
-			continue;
-    }
-    EXPECT_NO_THROW(inst.log(Logger::LogLevel::WARNING, "GTest", input));
-  }
-}
+//TEST(LoggerInteractive, LiveTest) {
+//  auto &inst = Logger::Logger::getInstance();
+//  inst.setLevel(Logger::LogLevel::DEBUG);
+//
+//  while (true) {
+//    std::string input;
+//
+//    std::cin >> input;
+//
+//    if (input == "exit")
+//      break;
+//    if (input == "setlevel") {
+//      std::string level;
+//      std::cin >> level;
+//
+//      if (level == "debug")
+//        inst.setLevel(Logger::LogLevel::DEBUG);
+//      else if (level == "info")
+//        inst.setLevel(Logger::LogLevel::INFO);
+//      else if (level == "warn")
+//        inst.setLevel(Logger::LogLevel::WARNING);
+//      else if (level == "error")
+//        inst.setLevel(Logger::LogLevel::ERROR);
+//      else if (level == "fatal")
+//        inst.setLevel(Logger::LogLevel::FATAL);
+//      continue;
+//    }
+//    if (input == "level") {
+//      std::string level, message;
+//      std::cin >> level >> message;
+//      Logger::LogLevel messLevel;
+//      if (level == "debug")
+//        messLevel = Logger::LogLevel::DEBUG;
+//      else if (level == "info")
+//        messLevel = Logger::LogLevel::INFO;
+//      else if (level == "warn")
+//        messLevel = Logger::LogLevel::WARNING;
+//      else if (level == "error")
+//        messLevel = Logger::LogLevel::ERROR;
+//      else if (level == "fatal")
+//        messLevel = Logger::LogLevel::FATAL;
+//      EXPECT_NO_THROW(inst.log(messLevel, "GTest", message));
+//			continue;
+//    }
+//    EXPECT_NO_THROW(inst.log(Logger::LogLevel::WARNING, "GTest", input));
+//  }
+//}
