@@ -106,7 +106,7 @@ TEST(SinkTest, FileSink) {
 }
 
 TEST(SinkTest, NetworkSink) {
-  auto udpSink = std::make_shared<Logger::NetworkSink>("127.0.0.1", 9000);
+  auto udpSink = std::make_shared<Logger::NetworkSink>("10.17.4.162", 8080);
   Logger::Logger::addSink(udpSink);
 
   EXPECT_NO_THROW(Logger::info("This is sent via UDP!"));
