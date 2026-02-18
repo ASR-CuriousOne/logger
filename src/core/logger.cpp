@@ -22,17 +22,14 @@ Logger::~Logger() {
 
 void Logger::log(LogLevel level, const std::string &origin,
                  const std::string &message) {
-  Logger &inst = getInstance();
 
-  if (level < inst.m_logLevel)
+  if (level < m_logLevel)
     return;
-
   Log log = {.logLevel = level, .origin = origin, .message = message};
-
-  inst.m_logQueue.push(std::move(log));
+  m_logQueue.push(std::move(log));
 }
 
-void Logger::setLevel(LogLevel level) { getInstance().m_logLevel = level; }
+void Logger::setLevel(LogLevel level) { m_logLevel = level; }
 
 void Logger::writer() {
   while (m_isRunning || !m_logQueue.isEmpty()) {
@@ -50,8 +47,7 @@ void Logger::writeLogs(const Log &log) {
 }
 
 void Logger::addSink(std::shared_ptr<ILogSink> sink) {
-  auto &inst = Logger::getInstance();
-  inst.m_sinks.push_back(sink);
+  m_sinks.push_back(sink);
 }
 
 } // namespace Logger
