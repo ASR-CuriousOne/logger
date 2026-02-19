@@ -32,8 +32,12 @@ void NetworkSink::write(const Log &log) {
   if (m_socketFd < 0)
     return;
 
-  std::string message = log.makeLog() + "\n";
-
+  std::string message =
+      std::format("[{:%Y-%m-%d %H:%M:%S}] [{}] [{}] {}", log.timestamp,
+                  levelToString(log.logLevel), log.origin, log.message);
+  if (log.hasBinaryData()) {
+    message += std::format(" [+ {} bytes of binary data]", log.rawBytes.size());
+  }
   ssize_t sent_bytes =
       sendto(m_socketFd, message.c_str(), message.length(), 0,
              (const struct sockaddr *)&m_servAddr, sizeof(m_servAddr));

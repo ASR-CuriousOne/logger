@@ -16,6 +16,24 @@ public:
   void log(LogLevel level, const std::string &origin,
            const std::string &message);
 
+	template<typename T>
+	void logBinary(LogLevel level, const std::string &origin,
+           const std::string &message, const T &data){
+		static_assert(std::is_trivially_copyable_v<T>, "Type must be trivially copyable to serialize raw bytes");
+
+    Log logInfo = {
+        .logLevel = level,
+        .timestamp = std::chrono::system_clock::now(),
+        .origin = origin,
+        .message = message
+    };
+
+    const uint8_t* bytePtr = reinterpret_cast<const uint8_t*>(&data);
+    logInfo.rawBytes.assign(bytePtr, bytePtr + sizeof(T));
+
+    m_logQueue.push(std::move(logInfo));
+	}
+
   void setLevel(LogLevel level);
 
   void addSink(std::shared_ptr<ILogSink> sink);

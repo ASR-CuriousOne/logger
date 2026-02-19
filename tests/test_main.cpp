@@ -1,3 +1,5 @@
+#include "logger/sinks.hpp"
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -60,6 +62,18 @@ Logger::Log createTestLog(const std::string &msg) {
                      .origin = "TestOrigin",
                      .message = msg};
 }
+Logger::Log createBinaryTestLog(const std::string &msg) {
+  auto log = Logger::Log{.logLevel = Logger::LogLevel::INFO,
+                         .origin = "TestOrigin",
+                         .message = msg};
+
+  int number = 10;
+
+  const uint8_t *bytePtr = reinterpret_cast<const uint8_t *>(&number);
+  log.rawBytes.insert(log.rawBytes.end(), bytePtr, bytePtr + sizeof(bytePtr));
+
+  return log;
+}
 TEST(SinkTest, ConsoleSink) {
   CaptureStdout capturer;
   Logger::ConsoleSink consoleSink;
@@ -108,4 +122,21 @@ TEST(SinkTest, NetworkSink) {
 
   EXPECT_NO_THROW(testLogger.info("This is sent via UDP!"));
   EXPECT_NO_THROW(testLogger.info("This too is sent via UDP!"));
+}
+
+TEST(SinkTest, BinaryFileSink) {
+  std::filesystem::path testBinFile = "testBinLogOutput.bin";
+
+  if (std::filesystem::exists(testBinFile)) {
+    std::filesystem::remove(testBinFile);
+  }
+
+  {
+    Logger::BinaryFileSink binaryFileSink(testBinFile);
+    Logger::Log log = createBinaryTestLog("Hello File");
+    binaryFileSink.write(log);
+  }
+	
+	
+
 }

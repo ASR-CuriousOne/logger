@@ -22,6 +22,15 @@ public:
   void write(const Log &log) override;
 };
 
+class BinaryFileSink : public ILogSink {
+	std::ofstream m_file;
+	std::mutex m_mutex;
+
+	public:
+	explicit BinaryFileSink(const std::filesystem::path &filePath);
+	void write(const Log &log) override;
+};
+
 class ConsoleSink : public ILogSink {
 public:
   void write(const Log &log) override;

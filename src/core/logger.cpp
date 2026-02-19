@@ -25,7 +25,10 @@ void Logger::log(LogLevel level, const std::string &origin,
 
   if (level < m_logLevel)
     return;
-  Log log = {.logLevel = level, .origin = origin, .message = message};
+  Log log = {.logLevel = level,
+             .timestamp = std::chrono::system_clock::now(),
+             .origin = origin,
+             .message = message};
   m_logQueue.push(std::move(log));
 }
 
