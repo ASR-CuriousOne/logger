@@ -10,7 +10,7 @@ namespace Logger {
 Logger::Logger() {
   m_isRunning = true;
 
-  m_sinks.push_back(std::make_shared<ConsoleSink>());
+  addSink(std::make_shared<ConsoleSink>());
   writerThread = std::thread([this] { writer(); });
 }
 
@@ -20,8 +20,8 @@ Logger::~Logger() {
   writerThread.join();
 }
 
-void Logger::log(LogLevel level, const std::string &origin,
-                 const std::string &message) {
+void Logger::log(LogLevel level,
+                 const std::string &origin, const std::string &message, const Channel& channel) {
 
   if (level < m_logLevel)
     return;
@@ -44,13 +44,30 @@ void Logger::writer() {
 }
 
 void Logger::writeLogs(const Log &log) {
-  for (const auto &sink : m_sinks) {
-    sink->write(log);
+  for (const auto &routedSink : m_sinks) {
+    bool shouldWrite = false;
+
+    if (routedSink.acceptedChannels.empty()) {
+      shouldWrite = true;
+    } else {
+      for (const auto &ch : routedSink.acceptedChannels) {
+        if (ch.get() == log.channel.get()) {
+          shouldWrite = true;
+          break;
+        }
+      }
+    }
+
+    if (shouldWrite) {
+      routedSink.sink->write(log);
+    }
   }
 }
 
-void Logger::addSink(std::shared_ptr<ILogSink> sink) {
-  m_sinks.push_back(sink);
+void Logger::addSink(
+    std::shared_ptr<ILogSink> sink,
+    const std::vector<std::reference_wrapper<const Channel>> &channels) {
+  m_sinks.push_back({sink, channels});
 }
 
 } // namespace Logger

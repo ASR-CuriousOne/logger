@@ -1,8 +1,11 @@
+#include "logger/log.hpp"
 #include "logger/sinks.hpp"
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <iomanip>
+#include <ios>
 #include <iostream>
 #include <logger/logger.hpp>
 #include <string>
@@ -62,18 +65,7 @@ Logger::Log createTestLog(const std::string &msg) {
                      .origin = "TestOrigin",
                      .message = msg};
 }
-Logger::Log createBinaryTestLog(const std::string &msg) {
-  auto log = Logger::Log{.logLevel = Logger::LogLevel::INFO,
-                         .origin = "TestOrigin",
-                         .message = msg};
 
-  int number = 10;
-
-  const uint8_t *bytePtr = reinterpret_cast<const uint8_t *>(&number);
-  log.rawBytes.insert(log.rawBytes.end(), bytePtr, bytePtr + sizeof(bytePtr));
-
-  return log;
-}
 TEST(SinkTest, ConsoleSink) {
   CaptureStdout capturer;
   Logger::ConsoleSink consoleSink;
@@ -124,6 +116,19 @@ TEST(SinkTest, NetworkSink) {
   EXPECT_NO_THROW(testLogger.info("This too is sent via UDP!"));
 }
 
+Logger::Log createBinaryTestLog(const std::string &msg) {
+  auto log = Logger::Log{.logLevel = Logger::LogLevel::INFO,
+                         .origin = "BA",
+                         .message = msg};
+
+  int number = 10;
+
+  const uint8_t *bytePtr = reinterpret_cast<const uint8_t *>(&number);
+  log.rawBytes.insert(log.rawBytes.end(), bytePtr, bytePtr + sizeof(number));
+
+  return log;
+}
+
 TEST(SinkTest, BinaryFileSink) {
   std::filesystem::path testBinFile = "testBinLogOutput.bin";
 
@@ -133,10 +138,28 @@ TEST(SinkTest, BinaryFileSink) {
 
   {
     Logger::BinaryFileSink binaryFileSink(testBinFile);
-    Logger::Log log = createBinaryTestLog("Hello File");
+    Logger::Log log = createBinaryTestLog("AB");
     binaryFileSink.write(log);
   }
-	
-	
 
+  std::ifstream binaryLogFile(testBinFile, std::ios::binary);
+
+  binaryLogFile.seekg(0, std::ios::end);
+  std::streampos fileSize = binaryLogFile.tellg();
+  binaryLogFile.seekg(0, std::ios::beg);
+
+  std::vector<unsigned char> buffer(fileSize);
+  binaryLogFile.read(reinterpret_cast<char *>(buffer.data()), fileSize);
+
+  std::cout << std::hex << std::setfill('0');
+	int j = 0;
+	for(auto i : buffer){
+		std::cout << std::setw(2) << static_cast<unsigned int>(i) << " ";
+		if(j % 2 == 1) std::cout << std::endl; 
+		j++;
+	}
+
+  if (std::filesystem::exists(testBinFile)) {
+    std::filesystem::remove(testBinFile);
+  }
 }
